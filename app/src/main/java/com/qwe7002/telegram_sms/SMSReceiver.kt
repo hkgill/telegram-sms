@@ -108,7 +108,12 @@ class SMSReceiver : BroadcastReceiver() {
         val trustedPhoneNumber = sharedPreferences.getString("trusted_phone_number", null)
         var isTrustedPhone = false
         if (!trustedPhoneNumber.isNullOrEmpty()) {
-            isTrustedPhone = messageAddress.contains(trustedPhoneNumber)
+            // Use endsWith for phone matching to handle international prefixes (+1, +44, etc.)
+            // while preventing partial matches (e.g., "1234" matching "12345678")
+            val normalizedMessage = messageAddress.replace(Regex("[^0-9+]"), "")
+            val normalizedTrusted = trustedPhoneNumber.replace(Regex("[^0-9+]"), "")
+            isTrustedPhone = normalizedMessage.endsWith(normalizedTrusted) ||
+                             normalizedTrusted.endsWith(normalizedMessage)
         }
         val requestBody = RequestMessage()
         requestBody.chatId = chatId.toString()
