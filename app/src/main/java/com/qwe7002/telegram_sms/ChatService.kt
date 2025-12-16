@@ -262,9 +262,12 @@ class ChatService : Service() {
                     requestMsg.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 var line = 10
                 if (commands.size == 2 && isNumeric(commands[1])) {
-                    var getLine = Integer.getInteger(commands[1])?.toInt()!!
+                    var getLine = commands[1].toIntOrNull() ?: 10
                     if (getLine > 50) {
                         getLine = 50
+                    }
+                    if (getLine < 1) {
+                        getLine = 1
                     }
                     line = getLine
                 }
